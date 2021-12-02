@@ -362,7 +362,7 @@
     <comp lib="0" loc="(1420,1610)" name="Pin">
       <a name="facing" val="west"/>
       <a name="output" val="true"/>
-      <a name="label" val="ControlMuxIN"/>
+      <a name="label" val="ControlMuxSel"/>
       <a name="labelloc" val="east"/>
     </comp>
     <comp lib="0" loc="(1420,1480)" name="Pin">
