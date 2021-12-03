@@ -114,13 +114,12 @@
     <wire from="(1450,950)" to="(1450,1180)"/>
     <wire from="(570,290)" to="(570,1180)"/>
     <wire from="(2570,1820)" to="(2570,1840)"/>
-    <wire from="(520,1530)" to="(2190,1530)"/>
     <wire from="(2300,1540)" to="(2300,1880)"/>
     <wire from="(160,240)" to="(230,240)"/>
     <wire from="(1040,1250)" to="(1040,1290)"/>
     <wire from="(160,560)" to="(610,560)"/>
-    <wire from="(520,1350)" to="(520,1530)"/>
     <wire from="(1170,1890)" to="(1170,2000)"/>
+    <wire from="(520,1350)" to="(520,1530)"/>
     <wire from="(250,340)" to="(640,340)"/>
     <wire from="(2140,1150)" to="(2140,1180)"/>
     <wire from="(1630,510)" to="(2360,510)"/>
@@ -180,6 +179,7 @@
     <wire from="(2020,1830)" to="(2020,2040)"/>
     <wire from="(2070,1100)" to="(2070,1180)"/>
     <wire from="(910,1270)" to="(910,1300)"/>
+    <wire from="(2110,1530)" to="(2190,1530)"/>
     <wire from="(1930,1000)" to="(2370,1000)"/>
     <wire from="(510,1270)" to="(510,1300)"/>
     <wire from="(1170,1550)" to="(2190,1550)"/>
@@ -189,6 +189,7 @@
     <wire from="(740,140)" to="(740,1180)"/>
     <wire from="(740,140)" to="(2360,140)"/>
     <wire from="(1770,610)" to="(1770,1180)"/>
+    <wire from="(520,1530)" to="(2080,1530)"/>
     <wire from="(160,80)" to="(2300,80)"/>
     <wire from="(160,950)" to="(1270,950)"/>
     <wire from="(1900,680)" to="(2360,680)"/>
@@ -287,172 +288,31 @@
     <wire from="(1700,560)" to="(1700,1180)"/>
     <wire from="(900,1250)" to="(900,1300)"/>
     <wire from="(1170,1550)" to="(1170,1660)"/>
-    <comp lib="1" loc="(970,1250)" name="XNOR Gate">
+    <comp lib="1" loc="(1950,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
     </comp>
-    <comp lib="0" loc="(160,1050)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="MEM/WB.RegisterRd[2]"/>
+    <comp lib="1" loc="(2630,1640)" name="AND Gate">
+      <a name="inputs" val="3"/>
     </comp>
-    <comp lib="1" loc="(2020,1250)" name="XNOR Gate">
+    <comp lib="1" loc="(2110,1530)" name="NOT Gate"/>
+    <comp lib="0" loc="(160,510)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRs[2]"/>
+    </comp>
+    <comp lib="1" loc="(1880,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="0" loc="(160,460)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRs[1]"/>
-    </comp>
-    <comp lib="0" loc="(160,830)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRt[3]"/>
-    </comp>
-    <comp lib="0" loc="(160,190)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="EX/MEM.RegisterRd[1]"/>
-    </comp>
-    <comp lib="1" loc="(760,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="0" loc="(160,1150)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="MEM/WB.RegisterRd[4]"/>
-    </comp>
-    <comp lib="1" loc="(520,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="0" loc="(160,30)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="EX/MEM.RegWrite"/>
-    </comp>
-    <comp lib="1" loc="(380,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="0" loc="(160,780)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRt[2]"/>
-    </comp>
-    <comp lib="0" loc="(160,950)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="MEM/WB.RegisterRd[0]"/>
-    </comp>
-    <comp lib="1" loc="(2090,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="0" loc="(160,290)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="EX/MEM.RegisterRd[3]"/>
-    </comp>
-    <comp lib="0" loc="(160,240)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="EX/MEM.RegisterRd[2]"/>
     </comp>
     <comp lib="1" loc="(450,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
     </comp>
-    <comp lib="1" loc="(2630,1860)" name="AND Gate">
-      <a name="inputs" val="4"/>
-    </comp>
-    <comp lib="0" loc="(160,1000)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="MEM/WB.RegisterRd[1]"/>
-    </comp>
-    <comp lib="0" loc="(2750,1860)" name="Pin">
-      <a name="facing" val="west"/>
-      <a name="output" val="true"/>
-      <a name="label" val="ForwardB[0]"/>
-      <a name="labelloc" val="east"/>
-    </comp>
-    <comp lib="0" loc="(160,680)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRt[0]"/>
-    </comp>
-    <comp lib="1" loc="(2630,1980)" name="AND Gate">
-      <a name="inputs" val="3"/>
-    </comp>
-    <comp lib="0" loc="(160,560)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRs[3]"/>
-    </comp>
-    <comp lib="1" loc="(230,1240)" name="OR Gate">
-      <a name="facing" val="south"/>
-      <a name="label" val="EX/MEM.RegisterRd != 0"/>
-    </comp>
-    <comp lib="1" loc="(1950,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="0" loc="(2750,1520)" name="Pin">
-      <a name="facing" val="west"/>
-      <a name="output" val="true"/>
-      <a name="label" val="ForwardA[0]"/>
-      <a name="labelloc" val="east"/>
-    </comp>
-    <comp lib="1" loc="(590,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="1" loc="(900,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="0" loc="(160,730)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRt[1]"/>
-    </comp>
-    <comp lib="1" loc="(660,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="1" loc="(1610,1350)" name="AND Gate">
-      <a name="facing" val="south"/>
-      <a name="label" val="MEM/WB.RegisterRd = ID/EX.RegisterRs"/>
-    </comp>
-    <comp lib="1" loc="(1470,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="1" loc="(2630,1520)" name="AND Gate">
-      <a name="inputs" val="4"/>
-    </comp>
     <comp lib="0" loc="(160,1100)" name="Pin">
       <a name="tristate" val="false"/>
       <a name="label" val="MEM/WB.RegisterRd[3]"/>
     </comp>
-    <comp lib="0" loc="(160,880)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRt[4]"/>
-    </comp>
-    <comp lib="1" loc="(2020,1350)" name="AND Gate">
-      <a name="facing" val="south"/>
-      <a name="label" val="MEM/WB.RegisterRd = ID/EX.RegisterRt"/>
-    </comp>
-    <comp lib="1" loc="(1290,1240)" name="OR Gate">
-      <a name="facing" val="south"/>
-      <a name="label" val="MEM/WB.RegisterRd != 0"/>
-    </comp>
-    <comp lib="1" loc="(1750,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="0" loc="(160,510)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRs[2]"/>
-    </comp>
-    <comp lib="0" loc="(160,340)" name="Pin">
-      <a name="tristate" val="false"/>
-      <a name="label" val="EX/MEM.RegisterRd[4]"/>
-    </comp>
-    <comp lib="1" loc="(2160,1250)" name="XNOR Gate">
-      <a name="facing" val="south"/>
-      <a name="inputs" val="2"/>
-    </comp>
-    <comp lib="1" loc="(830,1250)" name="XNOR Gate">
+    <comp lib="1" loc="(2090,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
     </comp>
@@ -462,11 +322,25 @@
       <a name="label" val="ForwardA[1]"/>
       <a name="labelloc" val="east"/>
     </comp>
-    <comp lib="1" loc="(900,1350)" name="AND Gate">
+    <comp lib="1" loc="(970,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
-      <a name="label" val="EX/MEM.RegisterRd = ID/EX.RegisterRt"/>
+      <a name="inputs" val="2"/>
     </comp>
-    <comp lib="1" loc="(1040,1250)" name="XNOR Gate">
+    <comp lib="0" loc="(160,830)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRt[3]"/>
+    </comp>
+    <comp lib="0" loc="(160,680)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRt[0]"/>
+    </comp>
+    <comp lib="0" loc="(2750,1860)" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="label" val="ForwardB[0]"/>
+      <a name="labelloc" val="east"/>
+    </comp>
+    <comp lib="1" loc="(900,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
     </comp>
@@ -474,31 +348,127 @@
       <a name="facing" val="south"/>
       <a name="label" val="EX/MEM.RegisterRd = ID/EX.RegisterRs"/>
     </comp>
+    <comp lib="0" loc="(160,190)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="EX/MEM.RegisterRd[1]"/>
+    </comp>
+    <comp lib="0" loc="(160,560)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRs[3]"/>
+    </comp>
+    <comp lib="0" loc="(160,780)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRt[2]"/>
+    </comp>
+    <comp lib="0" loc="(160,950)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="MEM/WB.RegisterRd[0]"/>
+    </comp>
+    <comp lib="1" loc="(1610,1350)" name="AND Gate">
+      <a name="facing" val="south"/>
+      <a name="label" val="MEM/WB.RegisterRd = ID/EX.RegisterRs"/>
+    </comp>
+    <comp lib="0" loc="(160,730)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRt[1]"/>
+    </comp>
+    <comp lib="0" loc="(160,80)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="MEM/WB.RegWrite"/>
+    </comp>
+    <comp lib="1" loc="(1750,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(590,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(2020,1350)" name="AND Gate">
+      <a name="facing" val="south"/>
+      <a name="label" val="MEM/WB.RegisterRd = ID/EX.RegisterRt"/>
+    </comp>
     <comp lib="1" loc="(1610,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="0" loc="(160,460)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRs[1]"/>
+    </comp>
+    <comp lib="0" loc="(160,610)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRs[4]"/>
+    </comp>
+    <comp lib="1" loc="(2630,1520)" name="AND Gate">
+      <a name="inputs" val="4"/>
     </comp>
     <comp lib="0" loc="(160,410)" name="Pin">
       <a name="tristate" val="false"/>
       <a name="label" val="ID/EX.RegisterRs[0]"/>
     </comp>
-    <comp lib="1" loc="(1880,1250)" name="XNOR Gate">
+    <comp lib="1" loc="(760,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
     </comp>
-    <comp lib="1" loc="(2250,1530)" name="NAND Gate">
+    <comp lib="1" loc="(2630,1980)" name="AND Gate">
       <a name="inputs" val="3"/>
+    </comp>
+    <comp lib="1" loc="(380,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(1470,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(520,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="0" loc="(160,240)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="EX/MEM.RegisterRd[2]"/>
+    </comp>
+    <comp lib="1" loc="(2160,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="0" loc="(160,30)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="EX/MEM.RegWrite"/>
+    </comp>
+    <comp lib="0" loc="(160,340)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="EX/MEM.RegisterRd[4]"/>
+    </comp>
+    <comp lib="1" loc="(2020,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
     </comp>
     <comp lib="1" loc="(2280,1870)" name="NAND Gate">
       <a name="inputs" val="3"/>
     </comp>
-    <comp lib="1" loc="(1680,1250)" name="XNOR Gate">
+    <comp lib="1" loc="(1540,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
     </comp>
-    <comp lib="0" loc="(160,140)" name="Pin">
+    <comp lib="0" loc="(160,1050)" name="Pin">
       <a name="tristate" val="false"/>
-      <a name="label" val="EX/MEM.RegisterRd[0]"/>
+      <a name="label" val="MEM/WB.RegisterRd[2]"/>
+    </comp>
+    <comp lib="1" loc="(2630,1860)" name="AND Gate">
+      <a name="inputs" val="4"/>
+    </comp>
+    <comp lib="1" loc="(830,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="0" loc="(2750,1520)" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="label" val="ForwardA[0]"/>
+      <a name="labelloc" val="east"/>
     </comp>
     <comp lib="0" loc="(2750,1980)" name="Pin">
       <a name="facing" val="west"/>
@@ -506,20 +476,52 @@
       <a name="label" val="ForwardB[1]"/>
       <a name="labelloc" val="east"/>
     </comp>
-    <comp lib="0" loc="(160,80)" name="Pin">
+    <comp lib="0" loc="(160,140)" name="Pin">
       <a name="tristate" val="false"/>
-      <a name="label" val="MEM/WB.RegWrite"/>
+      <a name="label" val="EX/MEM.RegisterRd[0]"/>
     </comp>
-    <comp lib="0" loc="(160,610)" name="Pin">
+    <comp lib="0" loc="(160,1000)" name="Pin">
       <a name="tristate" val="false"/>
-      <a name="label" val="ID/EX.RegisterRs[4]"/>
+      <a name="label" val="MEM/WB.RegisterRd[1]"/>
     </comp>
-    <comp lib="1" loc="(1540,1250)" name="XNOR Gate">
+    <comp lib="1" loc="(1290,1240)" name="OR Gate">
+      <a name="facing" val="south"/>
+      <a name="label" val="MEM/WB.RegisterRd != 0"/>
+    </comp>
+    <comp lib="1" loc="(900,1350)" name="AND Gate">
+      <a name="facing" val="south"/>
+      <a name="label" val="EX/MEM.RegisterRd = ID/EX.RegisterRt"/>
+    </comp>
+    <comp lib="0" loc="(160,1150)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="MEM/WB.RegisterRd[4]"/>
+    </comp>
+    <comp lib="1" loc="(1680,1250)" name="XNOR Gate">
       <a name="facing" val="south"/>
       <a name="inputs" val="2"/>
     </comp>
-    <comp lib="1" loc="(2630,1640)" name="AND Gate">
+    <comp lib="1" loc="(1040,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(660,1250)" name="XNOR Gate">
+      <a name="facing" val="south"/>
+      <a name="inputs" val="2"/>
+    </comp>
+    <comp lib="1" loc="(2250,1530)" name="NAND Gate">
       <a name="inputs" val="3"/>
+    </comp>
+    <comp lib="0" loc="(160,880)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="ID/EX.RegisterRt[4]"/>
+    </comp>
+    <comp lib="0" loc="(160,290)" name="Pin">
+      <a name="tristate" val="false"/>
+      <a name="label" val="EX/MEM.RegisterRd[3]"/>
+    </comp>
+    <comp lib="1" loc="(230,1240)" name="OR Gate">
+      <a name="facing" val="south"/>
+      <a name="label" val="EX/MEM.RegisterRd != 0"/>
     </comp>
   </circuit>
 </project>
