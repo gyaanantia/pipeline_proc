@@ -2,7 +2,7 @@
 
 // AD first attempt at processor.  P. 255 in text.
 
-module processor(clk, reset, load_pc, z, alu_result); //input: pc counter value; output: instruction
+module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter value; output: instruction
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
