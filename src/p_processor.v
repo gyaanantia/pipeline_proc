@@ -42,6 +42,21 @@ module processor(clk, reset, load_pc, z, alu_result); //input: pc counter value;
 	 Bne,// addition to book diagram 
 	 Bgtz; // addition to book diagram
 
+
+
+    register150 preg1(
+        .clk(clk), 
+        .areset(reset), 
+        .aload(load_pc), 
+        .adata(pc_start), //
+        .data_in({add_1_out, ins_mem_out}), // 
+        .write_enable(1'b1), // want to be able to write at end, always
+        .data_out(pc_out) // debug; final value is pc_out
+    )
+
+
+
+
     //program counter
     register pc( // add a register to be the pc.
         .clk(clk), 
@@ -50,7 +65,7 @@ module processor(clk, reset, load_pc, z, alu_result); //input: pc counter value;
         .adata(pc_start), //reloads initial value when aload asserted
         .data_in(branch_mux_out), // DEBUG; final output is branch_mux_out
         .write_enable(1'b1), // want to be able to write at end, always
-        .data_out(pc_out) // debug; final value is pc_out
+        .data_out() // debug; final value is pc_out
     );
 
     //instruction memory
@@ -64,17 +79,6 @@ module processor(clk, reset, load_pc, z, alu_result); //input: pc counter value;
     );
 
    //mymodule modulename(.zero_in(0));
-
-    //data memory
-    // gac_syncram #(.mem_file("data/bills_branch.dat")) data_mem (
-    //     .clk(clk),
-    //     .cs(1'b1), //always on
-    //     .oe(MemRead),
-    //     .we(MemWrite),
-    //     .addr(alu_result), // DEBUG - final value is alu_result
-    //     .din(read_data_2), // DEBUG - final value is read_data_2
-    //     .dout(data_mem_out)
-    //     );
 
     gac_sram #(.mem_file(memory_file)) data_mem (
         .cs(1'b1), //always on
