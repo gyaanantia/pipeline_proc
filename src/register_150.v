@@ -1,7 +1,7 @@
 `timescale 1ns/10ps
 // A single 150-bit register
 
-module register(clk, areset, aload, adata, data_in, write_enable, data_out);
+module register150(clk, areset, aload, adata, data_in, write_enable, data_out);
 
 input clk;
 input areset;
