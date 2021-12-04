@@ -37,4 +37,20 @@ module forward_unit(EXMEM_RegWrite, MEMWB_RegWrite, EXMEM_Rd, IDEX_Rs, IDEX_Rt, 
     wire memwbrdnot_0_wire;
     gac_or_gate_6in memwbrd_not_0(.a(MEMWB_Rd[0]), .b(MEMWB_Rd[1]), .c(MEMWB_Rd[2]), .d(MEMWB_Rd[3]), .e(MEMWB_Rd[4]), .f(1'b0), .z(memwbrdnot_0_wire));
 
+
+    // NOT SURE AFTER THIS POINT
+    gac_and_gate_6in a1(.a(exmemrdnot_0_wire), .b(exmemrdrs_and_wire), .c(EXMEM_RegWrite), .d(1'b1), .e(1'b1), .f(1'b1), .z(ForwardA[1]));
+
+    wire not_a1;
+    gac_not_gate nota1(.x(ForwardA[1]), .z(not_a1));
+    gac_and_gate_6in a0(.a(memwbrdrs_and_wire), .b(memwbrdnot_0_wire), .c(not_a1), .d(MEMWB_RegWrite), .e(1'b1), .f(1'b1), .z(ForwardA[0]));
+
+    gac_and_gate_6in b1(.a(exmemrdnot_0_wire), .b(exmemrdrt_and_wire), .c(EXMEM_RegWrite), .d(1'b1), .e(1'b1), .f(1'b1), .z(ForwardB[1]));
+
+    wire not_b1;
+    gac_not_gate notb1(.x(ForwardB[1]), .z(not_a1));
+    gac_and_gate_6in b0(.a(memwbrdrt_and_wire), .b(memwbrdnot_0_wire), .c(not_b1), .d(MEMWB_RegWrite), .e(1'b1), .f(1'b1), .z(ForwardB[0]));
+
+    
+
 endmodule
