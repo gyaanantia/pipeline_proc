@@ -48,7 +48,7 @@ module forward_unit(EXMEM_RegWrite, MEMWB_RegWrite, EXMEM_Rd, IDEX_Rs, IDEX_Rt, 
     gac_and_gate_6in b1(.a(exmemrdnot_0_wire), .b(exmemrdrt_and_wire), .c(EXMEM_RegWrite), .d(1'b1), .e(1'b1), .f(1'b1), .z(ForwardB[1]));
 
     wire not_b1;
-    gac_not_gate notb1(.x(ForwardB[1]), .z(not_a1));
+    gac_not_gate notb1(.x(ForwardB[1]), .z(not_b1));
     gac_and_gate_6in b0(.a(memwbrdrt_and_wire), .b(memwbrdnot_0_wire), .c(not_b1), .d(MEMWB_RegWrite), .e(1'b1), .f(1'b1), .z(ForwardB[0]));
 
     
