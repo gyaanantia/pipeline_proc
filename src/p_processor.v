@@ -2,17 +2,16 @@
 
 // AD first attempt at processor.  P. 255 in text.
 
-module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter value; output: instruction
+module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc counter value; output: instruction
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
-    parameter memory_file = "data/unsigned_sum.dat";
+    parameter memory_file = "data/bills_branch.dat";
     input clk, reset, load_pc;
-    output wire [31:0] zed, alu_result;
+    output wire [31:0] zed, alu_result, pc_out;
     // internal DATA wires:
     wire PCSrc, PCWrite, IFID_Write, ControlMuxSel;
-    wire [31:0] pc_out, 
-		add_1_out, 
+    wire [31:0] add_1_out, 
 		add_2_out, 
 		branch_mux_out, 
 		ins_mem_out,

@@ -1,4 +1,4 @@
-
+`timescale 1ns/10ps
 module branch_unit(beq_f, bne_f, bgtz_f, zf, msb, br_sel);
 
     input beq_f, bne_f, bgtz_f, zf, msb;

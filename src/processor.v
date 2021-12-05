@@ -6,7 +6,7 @@ module processor(clk, reset, load_pc, z, alu_result); //input: pc counter value;
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
-    parameter memory_file = "data/sort_corrected_branch.dat";
+    parameter memory_file = "data/bills_branch.dat";
     input clk, reset, load_pc;
     output wire [31:0] z, alu_result;
     // internal DATA wires:
