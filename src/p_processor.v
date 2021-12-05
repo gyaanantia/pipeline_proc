@@ -27,7 +27,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
     // internal CONTROL wires:
     // ALU control wires
     wire [2:0] alu_op_in; // check bit numbers
-    wire [1:0] ALUOp;
+    wire [1:0] ALUOp, ForwardA, ForwardB;
     wire alu_zero;
    
     // CONTROL block single bit
@@ -42,6 +42,16 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
 	 Bgtz; // addition to book diagram
 
 
+    wire [170:0] ifid_out, idex_out, exmem_out, memwb_out;
+    wire [31:0] second_a, alu_input_a, second_b, alu_input_b;
+
+    // mux for branch logic
+    gac_mux_32 branch_mux ( // the leftmost mux
+	.sel(branch_mux_sel), 
+        .src0(add_1_out), 
+        .src1(exmem_out[101:70]), // add_2_out 
+        .z(branch_mux_out)
+    );
 
     //program counter
     register pc( // add a register to be the pc.
@@ -72,7 +82,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
     );
 
 
-    wire [170:0] ifid_out;
+    
     register_171 IFID(
         .clk(clk), 
         .areset(reset), 
@@ -115,7 +125,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .a_ext(ext_out)
     );
 
-    wire [170:0] idex_out;
+    
     register_171 IDEX(
         .clk(clk), 
         .areset(reset), 
@@ -134,13 +144,6 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .z(add_2_out) 
         );
 
-    // mux for register output
-    gac_mux_32 read_data_2_mux (
-        .sel(idex_out[161]), // ALUSrc
-        .src0(idex_out[95:64]), // read_data_2
-        .src1(idex_out[63:32]), //ext_out
-        .z(mux_read_reg)
-    );
 
      alu_control_unit alu_control(
         .inst(idex_out[37:32]), //these are the funct bits (LSBs of ext_out)
@@ -150,8 +153,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
 
     ALU alu(
         .ctrl(alu_op_in), 
-        .A(idex_out[127:96]), //read_data_1
-        .B(mux_read_reg),
+        .A(alu_input_a), //read_data_1
+        .B(alu_input_b),
         .shamt(idex_out[10:6]), // 
         .cout(gnd),
         .ovf(gnd),
@@ -168,7 +171,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .z(mux_write_reg)
     );
 
-    wire [170:0] exmem_out;
+    
     register_171 EXMEM(
         .clk(clk), 
         .areset(reset), 
@@ -179,102 +182,85 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .data_out(exmem_out)
     );
 
-    wire branch_select_wire;
     branch_unit branch(
         .beq_f(exmem_out[108]),
         .bne_f(exmem_out[107]),
         .bgtz_f(exmem_out[106]),
         .zf(exmem_out[69]),
         .msb(exmem_out[68]),
-        .br_sel(branch_select_wire)
+        .br_sel(branch_mux_sel)
     );
 
    //mymodule modulename(.zero_in(0));
-
+    
     gac_sram #(.mem_file(memory_file)) data_mem (
         .cs(1'b1), //always on
-        .oe(MemRead),
-        .we(MemWrite),
-        .addr(alu_result), // DEBUG - final value is alu_result
-        .din(read_data_2), // DEBUG - final value is read_data_2
+        .oe(exmem_out[105]), //mem_read
+        .we(exmem_out[103]), //mem_write
+        .addr(exmem_out[68:37]), //alu_result
+        .din(exmem_out[36:5]), //read_data_2
         .dout(data_mem_out)
         );
+   
+
     
-    
-    
-    // mux for branch logic
-    gac_mux_32 branch_mux ( // the top one in the schematic
-	.sel(branch_mux_sel), // from the and gate
-        .src0(add_1_out), 
-        .src1(add_2_out), 
-        .z(branch_mux_out)
+    register_171 MEMWB(
+        .clk(clk),
+        .areset(reset),
+        .aload(load_pc), //load everything one bit
+        .adata(171{1'b0}),
+        .data_in({100{1'b0}, exmem_out[102], exmem_out[104], data_mem_out, exmem_out[68:37], exmem_out[4:0]}),
+        .write_enable(1'b1), // want to be able to write at end, always
+        .data_out(memwb_out)
     );
+    
 
 
     // the final mux at the end
     gac_mux_32 mux_out ( 
-        .sel(MemtoReg),
-        .src0(alu_result),
-        .src1(data_mem_out),
+        .sel(memwb_out[69]), //MemtoReg
+        .src0(memwb_out[36:5]), // alu_result
+        .src1(memwb_out[68:37]), // data_mem_out
         .z(z)
     );
 
-
-
-    wire beq_out;
-    gac_and_gate and_1(
-        .x(Beq),
-        .y(alu_zero),
-        .z(beq_out)
+    
+    gac_mux_32 fwd_A_mux(
+        .sel(ForwardA[0]),
+        .src0(idex_out[127:96]),
+        .src1(z),
+        .z(second_a)
     );
 
+    
 
-
-    wire not_zero_;
-    gac_not_gate not_zero(
-        .x(alu_zero),
-        .z(not_zero_)
+    gac_mux_32 fwd_A_mux_2_(
+        .sel(ForwardA[1]),
+        .src0(second_a),
+        .src1(exmem_out[68:37]),
+        .z(alu_input_a))
     );
 
-    wire bne_out;
-    gac_and_gate bne_and(
-        .x(Bne),
-        .y(not_zero_),
-        .z(bne_out)
+    
+    gac_mux_32 fwd_B_mux(
+        .sel(ForwardB[0]),
+        .src0(idex_out[95:64]),
+        .src1(exmem_out[68:37]),
+        .z(second_b)
     );
 
-    wire or_zf_msb;
-    gac_or_gate or_zf_msb_(
-        .x(alu_zero),
-        .y(read_data_1[31]),
-        .z(or_zf_msb)
+    
+    gac_mux_32 fwd_B_mux_2_(
+        .sel(ForwardB[1]),
+        .src0(second_b),
+        .src1(z),
+        .z(alu_input_b)
     );
 
-    wire bgtz_out;
-    gac_not_gate not_or_zf_msb(
-        .x(or_zf_msb),
-        .z(bgtz_out)
-    );
-
-
-    wire or_beq_bne;
-    gac_or_gate or_bne_(
-        .x(beq_out),
-        .y(bne_out),
-        .z(or_beq_bne)
-    );
-
-    wire bgtz_flag;
-    gac_and_gate and_bgtz(
-        .x(Bgtz),
-        .y(bgtz_out),
-        .z(bgtz_flag)
-    );
-
-    gac_or_gate branch_sel_bit(
-        .x(or_beq_bne),
-        .y(bgtz_flag),
-        .z(branch_mux_sel)
+    forward_unit fwd(
+        .EXMEM_RegWrite(exmem_out[102]),
+        .MEMWB_RegWrite(memwb_out[70]),
+        .EXMEM_Rd(exmem_out)
     );
 
 endmodule
