@@ -6,11 +6,11 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
-    parameter memory_file = "data/sort_corrected_branch.dat";
+    parameter memory_file = "data/unsigned_sum.dat";
     input clk, reset, load_pc;
     output wire [31:0] zed, alu_result;
     // internal DATA wires:
-    wire branch_mux_sel, PCWrite, IFID_Write, ControlMuxSel;
+    wire PCSrc, PCWrite, IFID_Write, ControlMuxSel;
     wire [31:0] pc_out, 
 		add_1_out, 
 		add_2_out, 
@@ -48,7 +48,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 
     // mux for branch logic
     gac_mux_32 branch_mux ( // the leftmost mux
-	    .sel(branch_mux_sel), 
+	    .sel(PCSrc), 
         .src0(add_1_out), 
         .src1(exmem_out[101:70]), // add_2_out 
         .z(branch_mux_out)
@@ -199,7 +199,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .bgtz_f(exmem_out[106]),
         .zf(exmem_out[69]),
         .msb(exmem_out[68]),
-        .br_sel(branch_mux_sel)
+        .br_sel(PCSrc)
     );
 
    //mymodule modulename(.zero_in(0));
@@ -237,7 +237,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     
     gac_mux_32 fwd_A_mux(
         .sel(ForwardA[0]),
-        .src0(idex_out[127:96]),
+        .src0(idex_out[127:96]), // read_data_1
         .src1(zed),
         .z(second_a)
     );
@@ -247,15 +247,15 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     gac_mux_32 fwd_A_mux_2_(
         .sel(ForwardA[1]),
         .src0(second_a),
-        .src1(exmem_out[68:37]),
+        .src1(exmem_out[68:37]), // alu_result
         .z(alu_input_a)
     );
 
     
     gac_mux_32 fwd_B_mux(
         .sel(ForwardB[0]),
-        .src0(idex_out[95:64]),
-        .src1(exmem_out[68:37]),
+        .src0(idex_out[95:64]), // read_data_2
+        .src1(exmem_out[68:37]), // alu_result
         .z(second_b)
     );
 
@@ -270,7 +270,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     forward_unit fwd(
         .EXMEM_RegWrite(exmem_out[102]), 
         .MEMWB_RegWrite(memwb_out[70]),
-        .EXMEM_Rd(exmem_out[4:0]),
+        .EXMEM_Rd(exmem_out[4:0]), // mux_write_reg
         .IDEX_Rs(idex_out[25:21]),
         .IDEX_Rt(idex_out[20:16]),
         .MEMWB_Rd(memwb_out[4:0]),
