@@ -6,7 +6,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
-    parameter memory_file = "data/sort_corrected_branch.dat";
+    parameter memory_file = "data/bills_branch.dat";
     input clk, reset, load_pc;
     output wire [31:0] zed, alu_result;
     // internal DATA wires:
@@ -17,7 +17,6 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 		branch_mux_out, 
 		ins_mem_out,
 		ext_out,
-		mux_read_reg,
 		read_data_1,
 		read_data_2,
 		data_mem_out;
@@ -48,7 +47,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 
     // mux for branch logic
     gac_mux_32 branch_mux ( // the leftmost mux
-	.sel(branch_mux_sel), 
+	    .sel(branch_mux_sel), 
         .src0(add_1_out), 
         .src1(exmem_out[101:70]), // add_2_out 
         .z(branch_mux_out)
@@ -87,8 +86,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     register_171 IFID(
         .clk(clk), 
         .areset(reset), 
-        .aload(load_pc), 
-        .adata(171'b0), //
+        .aload(load_pc),
         .data_in({107'b0, add_1_out[31:0], ins_mem_out[31:0]}), 
         .write_enable(IFID_Write), // want to be able to write at end, always
         .data_out(ifid_out) // ifid_out[0:31] = ins_mem_out, ifid_out[63:32] = add_1_out
@@ -123,7 +121,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .read_reg2(ifid_out[20:16]), 
         .write_reg(memwb_out[4:0]), 
         .write_data(zed), //DEBUG - final value is zed
-        .write_enable(RegWrite), // from control 
+        .write_enable(memwb_out[70]), // from control 
         .read_data1(read_data_1), //DEBUG - final value is read_data_1
         .read_data2(read_data_2)  //DEBUG - final value is read_data_2
         );
@@ -138,7 +136,6 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc), 
-        .adata(171'b0), //
         .data_in({control_mux_out[10:0], ifid_out[63:32], read_data_1[31:0], read_data_2[31:0], ext_out[31:0], ifid_out[31:0]}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(idex_out)
@@ -182,9 +179,8 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     register_171 EXMEM(
         .clk(clk), 
         .areset(reset), 
-        .aload(load_pc), 
-        .adata(171'b0), //
-        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], add_2_out[31:0], alu_zero, alu_result[31:0], idex_out[95:64], mux_write_reg[4:0]}), 
+        .aload(load_pc),
+        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], add_2_out[31:0], alu_zero, alu_result[31:0], alu_input_b[31:0], mux_write_reg[4:0]}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(exmem_out)
     );
@@ -205,7 +201,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .oe(exmem_out[105]), //mem_read
         .we(exmem_out[103]), //mem_write
         .addr(exmem_out[68:37]), //alu_result
-        .din(exmem_out[36:5]), //read_data_2
+        .din(exmem_out[36:5]), // alu_input_b
         .dout(data_mem_out)
         );
    
@@ -215,7 +211,6 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .clk(clk),
         .areset(reset),
         .aload(load_pc), //load everything one bit
-        .adata(171'b0),
         .data_in({100'b0, exmem_out[102], exmem_out[104], data_mem_out, exmem_out[68:37], exmem_out[4:0]}),
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(memwb_out)
