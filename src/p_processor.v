@@ -88,8 +88,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc), 
-        .adata(171{1'b0}), //
-        .data_in({107{1'b0}, add_1_out, ins_mem_out}), 
+        .adata({171{1'b0}}), //
+        .data_in({{107{1'b0}}, add_1_out, ins_mem_out}), 
         .write_enable(IFID_Write), // want to be able to write at end, always
         .data_out(ifid_out) // ifid_out[0:31] = ins_mem_out, ifid_out[63:32] = add_1_out
     );
@@ -138,7 +138,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc), 
-        .adata(171{1'b0}), //
+        .adata({171{1'b0}}), //
         .data_in({control_mux_out, ifid_out[63:32], read_data_1, read_data_2, ext_out, ifid_out[31:0]}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(idex_out)
@@ -183,8 +183,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc), 
-        .adata(171{1'b0}), //
-        .data_in({62{1'b0}, idex_out[169:165], idex_out[162], idex_out[160], add_2_out, alu_zero, alu_result, idex_out[95:64], mux_write_reg}), 
+        .adata({171{1'b0}}), //
+        .data_in({{62{1'b0}}, idex_out[169:165], idex_out[162], idex_out[160], add_2_out, alu_zero, alu_result, idex_out[95:64], mux_write_reg}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(exmem_out)
     );
@@ -215,8 +215,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .clk(clk),
         .areset(reset),
         .aload(load_pc), //load everything one bit
-        .adata(171{1'b0}),
-        .data_in({100{1'b0}, exmem_out[102], exmem_out[104], data_mem_out, exmem_out[68:37], exmem_out[4:0]}),
+        .adata({171{1'b0}}),
+        .data_in({{100{1'b0}}, exmem_out[102], exmem_out[104], data_mem_out, exmem_out[68:37], exmem_out[4:0]}),
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(memwb_out)
     );
@@ -245,7 +245,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .sel(ForwardA[1]),
         .src0(second_a),
         .src1(exmem_out[68:37]),
-        .z(alu_input_a))
+        .z(alu_input_a)
     );
 
     
