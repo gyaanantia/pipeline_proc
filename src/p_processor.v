@@ -2,13 +2,13 @@
 
 // AD first attempt at processor.  P. 255 in text.
 
-module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter value; output: instruction
+module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter value; output: instruction
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
     parameter memory_file = "data/sort_corrected_branch.dat";
     input clk, reset, load_pc;
-    output wire [31:0] z, alu_result;
+    output wire [31:0] zed, alu_result;
     // internal DATA wires:
     wire branch_mux_sel, PCWrite, IFID_Write, ControlMuxSel;
     wire [31:0] pc_out, 
@@ -88,8 +88,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc), 
-        .adata({171{1'b0}}), //
-        .data_in({{107{1'b0}}, add_1_out, ins_mem_out}), 
+        .adata(171'b0), //
+        .data_in({107'b0, add_1_out[31:0], ins_mem_out[31:0]}), 
         .write_enable(IFID_Write), // want to be able to write at end, always
         .data_out(ifid_out) // ifid_out[0:31] = ins_mem_out, ifid_out[63:32] = add_1_out
     );
@@ -121,8 +121,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .reset(reset),
         .read_reg1(ifid_out[25:21]), 
         .read_reg2(ifid_out[20:16]), 
-        .write_reg(mux_write_reg), // FIX AT END
-        .write_data(z), //DEBUG - final value is z
+        .write_reg(memwb_out[4:0]), 
+        .write_data(zed), //DEBUG - final value is zed
         .write_enable(RegWrite), // from control 
         .read_data1(read_data_1), //DEBUG - final value is read_data_1
         .read_data2(read_data_2)  //DEBUG - final value is read_data_2
@@ -138,8 +138,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc), 
-        .adata({171{1'b0}}), //
-        .data_in({control_mux_out, ifid_out[63:32], read_data_1, read_data_2, ext_out, ifid_out[31:0]}), 
+        .adata(171'b0), //
+        .data_in({control_mux_out[10:0], ifid_out[63:32], read_data_1[31:0], read_data_2[31:0], ext_out[31:0], ifid_out[31:0]}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(idex_out)
     );
@@ -147,7 +147,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
     //second adder (for branch)
     adder_32 adder_2 ( // this adder just increments the pc +4 every time
         .a(idex_out[159:128]), //add_1_out
-        .b({idex_out[61:32],2'b00}), // constant 4 for shift (shifting ext_out)
+        .b({idex_out[61:32], 2'b00}), // constant 4 for shift (shifting ext_out)
         .z(add_2_out) 
         );
 
@@ -183,8 +183,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc), 
-        .adata({171{1'b0}}), //
-        .data_in({{62{1'b0}}, idex_out[169:165], idex_out[162], idex_out[160], add_2_out, alu_zero, alu_result, idex_out[95:64], mux_write_reg}), 
+        .adata(171'b0), //
+        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], add_2_out[31:0], alu_zero, alu_result[31:0], idex_out[95:64], mux_write_reg[4:0]}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(exmem_out)
     );
@@ -215,8 +215,8 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .clk(clk),
         .areset(reset),
         .aload(load_pc), //load everything one bit
-        .adata({171{1'b0}}),
-        .data_in({{100{1'b0}}, exmem_out[102], exmem_out[104], data_mem_out, exmem_out[68:37], exmem_out[4:0]}),
+        .adata(171'b0),
+        .data_in({100'b0, exmem_out[102], exmem_out[104], data_mem_out, exmem_out[68:37], exmem_out[4:0]}),
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(memwb_out)
     );
@@ -228,14 +228,14 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .sel(memwb_out[69]), //MemtoReg
         .src0(memwb_out[36:5]), // alu_result
         .src1(memwb_out[68:37]), // data_mem_out
-        .z(z)
+        .z(zed)
     );
 
     
     gac_mux_32 fwd_A_mux(
         .sel(ForwardA[0]),
         .src0(idex_out[127:96]),
-        .src1(z),
+        .src1(zed),
         .z(second_a)
     );
 
@@ -260,7 +260,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
     gac_mux_32 fwd_B_mux_2_(
         .sel(ForwardB[1]),
         .src0(second_b),
-        .src1(z),
+        .src1(zed),
         .z(alu_input_b)
     );
 

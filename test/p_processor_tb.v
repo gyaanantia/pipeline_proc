@@ -12,7 +12,7 @@ module p_processor_tb;
         .clk(clk_tb),
         .reset(reset_tb),
         .load_pc(load_pc_tb),
-        .z(z_tb),
+        .zed(z_tb),
         .alu_result(alu_result_tb)
     );
 
