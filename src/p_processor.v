@@ -6,21 +6,21 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
-    parameter memory_file = "data/sort_corrected_branch.dat";
+    parameter memory_file = "data/unsigned_sum.dat";
     input clk, reset, load_pc;
     output wire [31:0] zed, alu_result;
     // internal DATA wires:
-    wire branch_mux_sel, PCWrite, IFID_Write, ControlMuxSel;
+    wire PCSrc, PCWrite, IFID_Write, ControlMuxSel;
     wire [31:0] pc_out, 
 		add_1_out, 
 		add_2_out, 
 		branch_mux_out, 
 		ins_mem_out,
 		ext_out,
-		mux_read_reg,
 		read_data_1,
 		read_data_2,
-		data_mem_out;
+		data_mem_out,
+        ForwardB_out;
    
     wire [4:0] 	mux_write_reg;
    
@@ -48,7 +48,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 
     // mux for branch logic
     gac_mux_32 branch_mux ( // the leftmost mux
-	.sel(branch_mux_sel), 
+	    .sel(PCSrc), 
         .src0(add_1_out), 
         .src1(exmem_out[101:70]), // add_2_out 
         .z(branch_mux_out)
@@ -87,8 +87,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     register_171 IFID(
         .clk(clk), 
         .areset(reset), 
-        .aload(load_pc), 
-        .adata(171'b0), //
+        .aload(load_pc),
         .data_in({107'b0, add_1_out[31:0], ins_mem_out[31:0]}), 
         .write_enable(IFID_Write), // want to be able to write at end, always
         .data_out(ifid_out) // ifid_out[0:31] = ins_mem_out, ifid_out[63:32] = add_1_out
@@ -123,7 +122,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .read_reg2(ifid_out[20:16]), 
         .write_reg(memwb_out[4:0]), 
         .write_data(zed), //DEBUG - final value is zed
-        .write_enable(RegWrite), // from control 
+        .write_enable(memwb_out[70]), // from control 
         .read_data1(read_data_1), //DEBUG - final value is read_data_1
         .read_data2(read_data_2)  //DEBUG - final value is read_data_2
         );
@@ -138,7 +137,6 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc), 
-        .adata(171'b0), //
         .data_in({control_mux_out[10:0], ifid_out[63:32], read_data_1[31:0], read_data_2[31:0], ext_out[31:0], ifid_out[31:0]}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(idex_out)
@@ -149,18 +147,25 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .a(idex_out[159:128]), //add_1_out
         .b({idex_out[61:32], 2'b00}), // constant 4 for shift (shifting ext_out)
         .z(add_2_out) 
-        );
+    );
 
 
-     alu_control_unit alu_control(
+    alu_control_unit alu_control(
         .inst(idex_out[37:32]), //these are the funct bits (LSBs of ext_out)
         .alu_op(idex_out[164:163]), //ALUOp
         .sel(alu_op_in) //actual alu control
     );
 
+    gac_mux_32 alu_src_mux(
+        .sel(idex_out[161]), // ALUSrc
+        .src0(ForwardB_out),
+        .src1(idex_out[63:32]), // ext_out
+        .z(alu_input_b)
+    );
+
     ALU alu(
         .ctrl(alu_op_in), 
-        .A(alu_input_a), //read_data_1
+        .A(alu_input_a), 
         .B(alu_input_b),
         .shamt(idex_out[10:6]), // 
         .cout(gnd),
@@ -182,9 +187,8 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     register_171 EXMEM(
         .clk(clk), 
         .areset(reset), 
-        .aload(load_pc), 
-        .adata(171'b0), //
-        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], add_2_out[31:0], alu_zero, alu_result[31:0], idex_out[95:64], mux_write_reg[4:0]}), 
+        .aload(load_pc),
+        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], add_2_out, alu_zero, alu_result, ForwardB_out, mux_write_reg}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(exmem_out)
     );
@@ -195,7 +199,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .bgtz_f(exmem_out[106]),
         .zf(exmem_out[69]),
         .msb(exmem_out[68]),
-        .br_sel(branch_mux_sel)
+        .br_sel(PCSrc)
     );
 
    //mymodule modulename(.zero_in(0));
@@ -205,7 +209,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .oe(exmem_out[105]), //mem_read
         .we(exmem_out[103]), //mem_write
         .addr(exmem_out[68:37]), //alu_result
-        .din(exmem_out[36:5]), //read_data_2
+        .din(exmem_out[36:5]), // alu_input_b
         .dout(data_mem_out)
         );
    
@@ -215,7 +219,6 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .clk(clk),
         .areset(reset),
         .aload(load_pc), //load everything one bit
-        .adata(171'b0),
         .data_in({100'b0, exmem_out[102], exmem_out[104], data_mem_out, exmem_out[68:37], exmem_out[4:0]}),
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(memwb_out)
@@ -234,7 +237,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     
     gac_mux_32 fwd_A_mux(
         .sel(ForwardA[0]),
-        .src0(idex_out[127:96]),
+        .src0(idex_out[127:96]), // read_data_1
         .src1(zed),
         .z(second_a)
     );
@@ -244,15 +247,15 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
     gac_mux_32 fwd_A_mux_2_(
         .sel(ForwardA[1]),
         .src0(second_a),
-        .src1(exmem_out[68:37]),
+        .src1(exmem_out[68:37]), // alu_result
         .z(alu_input_a)
     );
 
     
     gac_mux_32 fwd_B_mux(
         .sel(ForwardB[0]),
-        .src0(idex_out[95:64]),
-        .src1(exmem_out[68:37]),
+        .src0(idex_out[95:64]), // read_data_2
+        .src1(exmem_out[68:37]), // alu_result
         .z(second_b)
     );
 
@@ -261,13 +264,13 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .sel(ForwardB[1]),
         .src0(second_b),
         .src1(zed),
-        .z(alu_input_b)
+        .z(ForwardB_out)
     );
 
     forward_unit fwd(
         .EXMEM_RegWrite(exmem_out[102]), 
         .MEMWB_RegWrite(memwb_out[70]),
-        .EXMEM_Rd(exmem_out[4:0]),
+        .EXMEM_Rd(exmem_out[4:0]), // mux_write_reg
         .IDEX_Rs(idex_out[25:21]),
         .IDEX_Rt(idex_out[20:16]),
         .MEMWB_Rd(memwb_out[4:0]),
