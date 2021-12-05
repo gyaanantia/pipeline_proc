@@ -6,7 +6,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
-    parameter memory_file = "data/bills_branch.dat";
+    parameter memory_file = "data/sort_corrected_branch.dat";
     input clk, reset, load_pc;
     output wire [31:0] zed, alu_result;
     // internal DATA wires:
@@ -147,10 +147,10 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
         .a(idex_out[159:128]), //add_1_out
         .b({idex_out[61:32], 2'b00}), // constant 4 for shift (shifting ext_out)
         .z(add_2_out) 
-        );
+    );
 
 
-     alu_control_unit alu_control(
+    alu_control_unit alu_control(
         .inst(idex_out[37:32]), //these are the funct bits (LSBs of ext_out)
         .alu_op(idex_out[164:163]), //ALUOp
         .sel(alu_op_in) //actual alu control
@@ -165,7 +165,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result); //input: pc counter va
 
     ALU alu(
         .ctrl(alu_op_in), 
-        .A(alu_input_a), //read_data_1
+        .A(alu_input_a), 
         .B(alu_input_b),
         .shamt(idex_out[10:6]), // 
         .cout(gnd),
