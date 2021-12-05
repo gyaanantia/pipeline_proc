@@ -1,7 +1,7 @@
 `timescale 1ns/10ps
 // A single 128-bit register
 
-module register128(clk, areset, aload, adata, data_in, write_enable, data_out);
+module register_128(clk, areset, aload, adata, data_in, write_enable, data_out);
 
 input clk;
 input areset;

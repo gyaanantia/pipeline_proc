@@ -9,7 +9,7 @@ module branch_unit(beq_f, bne_f, bgtz_f, zf, msb, br_sel);
 
     wire not_zero_;
     gac_not_gate not_zero(
-        .x(alu_zero),
+        .x(zf),
         .z(not_zero_)
     );
 
