@@ -139,7 +139,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .areset(reset), 
         .aload(load_pc), 
         .adata(171{1'b0}), //
-        .data_in({control_mux_out, ifid_out[63:32], read_data_1, read_data_2, ext_out, ifid_out[31:0}), 
+        .data_in({control_mux_out, ifid_out[63:32], read_data_1, read_data_2, ext_out, ifid_out[31:0]}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(idex_out)
     );
