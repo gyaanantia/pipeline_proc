@@ -10,7 +10,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
     input clk, reset, load_pc;
     output wire [31:0] z, alu_result;
     // internal DATA wires:
-    wire branch_mux_sel;
+    wire branch_mux_sel, PCWrite, IFID_Write, ControlMuxSel;
     wire [31:0] pc_out, 
 		add_1_out, 
 		add_2_out, 
@@ -44,6 +44,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
 
     wire [170:0] ifid_out, idex_out, exmem_out, memwb_out;
     wire [31:0] second_a, alu_input_a, second_b, alu_input_b;
+    wire [10:0] control_mux_out;
 
     // mux for branch logic
     gac_mux_32 branch_mux ( // the leftmost mux
@@ -60,7 +61,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .aload(load_pc), 
         .adata(pc_start), //reloads initial value when aload asserted
         .data_in(branch_mux_out), // DEBUG; final output is branch_mux_out
-        .write_enable(1'b1), // want to be able to write at end, always
+        .write_enable(PCWrite), // want to be able to write at end, always
         .data_out(pc_out) // debug; final value is pc_out
     );
 
@@ -89,7 +90,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .aload(load_pc), 
         .adata(171{1'b0}), //
         .data_in({107{1'b0}, add_1_out, ins_mem_out}), 
-        .write_enable(1'b1), // want to be able to write at end, always
+        .write_enable(IFID_Write), // want to be able to write at end, always
         .data_out(ifid_out) // ifid_out[0:31] = ins_mem_out, ifid_out[63:32] = add_1_out
     );
 
@@ -105,6 +106,13 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
     .beq(Beq), 
     .bne(Bne), 
     .bgtz(Bgtz)
+    );
+
+    gac_mux_11 control_mux_(
+        .sel(ControlMuxSel),
+        .src0({RegDst, Beq, Bne, Bgtz, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, RegWrite}),
+        .src1(11'b0),
+        .z(control_mux_out)
     );
 
     // register file
@@ -131,8 +139,7 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
         .areset(reset), 
         .aload(load_pc), 
         .adata(171{1'b0}), //
-        .data_in({RegDst, Beq, Bne, Bgtz, MemRead, MemtoReg, ALUOp, MemWrite, ALUSrc, RegWrite,
-        ifid_out[63:32], read_data_1, read_data_2, ext_out, ifid_out[31:0}), 
+        .data_in({control_mux_out, ifid_out[63:32], read_data_1, read_data_2, ext_out, ifid_out[31:0}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(idex_out)
     );
@@ -258,9 +265,24 @@ module p_processor(clk, reset, load_pc, z, alu_result); //input: pc counter valu
     );
 
     forward_unit fwd(
-        .EXMEM_RegWrite(exmem_out[102]),
+        .EXMEM_RegWrite(exmem_out[102]), 
         .MEMWB_RegWrite(memwb_out[70]),
-        .EXMEM_Rd(exmem_out)
+        .EXMEM_Rd(exmem_out[4:0]),
+        .IDEX_Rs(idex_out[25:21]),
+        .IDEX_Rt(idex_out[20:16]),
+        .MEMWB_Rd(memwb_out[4:0]),
+        .ForwardA(ForwardA),
+        .ForwardB(ForwardB)
+    );
+
+    hazard_detection haz(
+        .IDEXMemRead(idex_out[166]),
+        .IDEXRegisterRt(idex_out[20:16]),
+        .IFIDRegisterRs(ifid_out[25:21]),
+        .IFIDRegisterRt(ifid_out[20:16]),
+        .PCWrite(PCWrite),
+        .IFIDWrite(IFID_Write),
+        .ControlMuxSel(ControlMuxSel)
     );
 
 endmodule
