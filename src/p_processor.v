@@ -6,13 +6,13 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
-    parameter memory_file = "data/bills_branch.dat";
+    parameter memory_file = "data/sort_corrected_branch.dat";
     input clk, reset, load_pc;
     output wire [31:0] zed, alu_result, pc_out;
     // internal DATA wires:
     wire PCSrc, PCWrite, IFID_Write, ControlMuxSel, branch_compare_zf;
     wire [31:0] add_1_out, 
-		add_2_out,
+		//add_2_out,
         branch_add_out,
 		branch_mux_out, 
         branch_compare_result,
@@ -160,12 +160,12 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
         .data_out(idex_out)
     );
 
-    //second adder (for branch)
-    adder_32 adder_2 ( // this adder just increments the pc +4 every time
-        .a(idex_out[159:128]), //add_1_out
-        .b({idex_out[61:32], 2'b00}), // constant 4 for shift (shifting ext_out)
-        .z(add_2_out) 
-    );
+    // //second adder (for branch)
+    // adder_32 adder_2 ( // this adder just increments the pc +4 every time
+    //     .a(idex_out[159:128]), //add_1_out
+    //     .b({idex_out[61:32], 2'b00}), // constant 4 for shift (shifting ext_out)
+    //     .z(add_2_out) 
+    // );
 
 
     alu_control_unit alu_control(
@@ -206,7 +206,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc),
-        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], add_2_out, alu_zero, alu_result, ForwardB_out, mux_write_reg}), 
+        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], 32'b0, alu_zero, alu_result, ForwardB_out, mux_write_reg}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(exmem_out)
     );
