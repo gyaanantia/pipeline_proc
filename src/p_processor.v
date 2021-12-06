@@ -206,7 +206,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
         .clk(clk), 
         .areset(reset), 
         .aload(load_pc),
-        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], 32'b0, alu_zero, alu_result, ForwardB_out, mux_write_reg}), 
+        .data_in({62'b0, idex_out[169:165], idex_out[162], idex_out[160], branch_add_out, alu_zero, alu_result, ForwardB_out, mux_write_reg}), 
         .write_enable(1'b1), // want to be able to write at end, always
         .data_out(exmem_out)
     );
