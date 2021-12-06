@@ -10,10 +10,12 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
     input clk, reset, load_pc;
     output wire [31:0] zed, alu_result, pc_out;
     // internal DATA wires:
-    wire PCSrc, PCWrite, IFID_Write, ControlMuxSel;
+    wire PCSrc, PCWrite, IFID_Write, ControlMuxSel, branch_compare_zf;
     wire [31:0] add_1_out, 
-		add_2_out, 
+		add_2_out,
+        branch_add_out,
 		branch_mux_out, 
+        branch_compare_result,
 		ins_mem_out,
 		ext_out,
 		read_data_1,
@@ -49,7 +51,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
     gac_mux_32 branch_mux ( // the leftmost mux
 	    .sel(PCSrc), 
         .src0(add_1_out), 
-        .src1(exmem_out[101:70]), // add_2_out 
+        .src1(branch_add_out),
         .z(branch_mux_out)
     );
 
@@ -90,6 +92,23 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
         .data_in({107'b0, add_1_out[31:0], ins_mem_out[31:0]}), 
         .write_enable(IFID_Write), // want to be able to write at end, always
         .data_out(ifid_out) // ifid_out[0:31] = ins_mem_out, ifid_out[63:32] = add_1_out
+    );
+
+    adder_32 branch_add(
+        .a({ext_out[29:0], 2'b00}), 
+        .b(ifid_out[63:32]), // add_1_out
+        .z(branch_add_out)
+    );
+
+    ALU branch_compare(
+        .ctrl(3'b110), // sub to compare
+        .A(read_data_1), 
+        .B(read_data_2),
+        .shamt(0), // 
+        .cout(gnd),
+        .ovf(gnd),
+        .ze(branch_compare_zf),
+        .R(branch_compare_result)
     );
 
     control_unit control(
@@ -193,11 +212,11 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
     );
 
     branch_unit branch(
-        .beq_f(exmem_out[108]),
-        .bne_f(exmem_out[107]),
-        .bgtz_f(exmem_out[106]),
-        .zf(exmem_out[69]),
-        .msb(exmem_out[68]),
+        .beq_f(Beq),
+        .bne_f(Bne),
+        .bgtz_f(Bgtz),
+        .zf(branch_compare_zf),
+        .msb(branch_compare_result[31]),
         .br_sel(PCSrc)
     );
 
