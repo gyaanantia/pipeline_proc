@@ -25,7 +25,6 @@ module p_processor_tb;
         reset_tb = 0;
         #10
         load_pc_tb = 0;
-        #10
         #5000
         $finish;
 
