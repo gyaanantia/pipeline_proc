@@ -6,7 +6,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
 
     //signals
     parameter pc_start = 32'h00400020; //this is what we are given for init
-    parameter memory_file = "data/sort_corrected_branch.dat";
+    parameter memory_file = "data/bills_branch_short.dat";
     input clk, reset, load_pc;
     output wire [31:0] zed, alu_result, pc_out;
     // internal DATA wires:
@@ -94,7 +94,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
         .aload(1'b0), // prev value was load_pc
         .adata(64'b0),
         .data_in({add_1_out[31:0], ins_mem_out[31:0]}), 
-        .write_enable(IFID_Write), // want to be able to write at end, always
+        .write_enable(IFID_Write), // alt value is IFID_Write
         .data_out(ifid_out) // ifid_out[0:31] = ins_mem_out, ifid_out[63:32] = add_1_out
     );
 
