@@ -291,7 +291,7 @@ module p_processor(clk, reset, load_pc, zed, alu_result, pc_out); //input: pc co
         .z(ForwardB_out)
     );
 
-    forward_unit fwd(
+    book_forward_unit fwd(
         .EXMEM_RegWrite(exmem_out[102]), 
         .MEMWB_RegWrite(memwb_out[70]),
         .EXMEM_Rd(exmem_out[4:0]), // mux_write_reg
